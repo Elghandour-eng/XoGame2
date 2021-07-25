@@ -10,143 +10,218 @@ class XOGame extends StatefulWidget {
 }
 
 class _XOGameState extends State<XOGame> {
-  List input = ['', '', '', '', '', '', '', '', ''];
-  bool turn = false;
-  int oScore=0;
-  int xScore =0;
-String winner ='';
+  int xScore = 0;
+  int oScore = 0;
+  bool turn =false;
+  String winner='';
+  List<String> input = ['', '', '', '', '', '', '', '', ''];
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
-          backgroundColor: Colors.grey[800],
+          backgroundColor: Colors.grey[900],
           body: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
                       children: [
-                        Text('Player x',style: TextStyle(fontSize: 25,color: Colors.white),),
-
-                        Text(xScore.toString(),style: TextStyle(fontSize: 25,color: Colors.white),),
-
+                        Text(
+                          'Player X',
+                          style: TextStyle(fontSize: 25, color: Colors.white),
+                        ),
+                        Text(
+                          xScore.toString(),
+                          style: TextStyle(fontSize: 25, color: Colors.white),
+                        )
                       ],
                     ),
-                    Column(
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
                       children: [
-                        Text('Player O',style: TextStyle(fontSize: 25,color: Colors.white),),
-                        Text(oScore.toString(),style: TextStyle(fontSize: 25,color: Colors.white),),
-
+                        Text(
+                          'Player O',
+                          style: TextStyle(fontSize: 25, color: Colors.white),
+                        ),
+                        Text(
+                          oScore.toString(),
+                          style: TextStyle(fontSize: 25, color: Colors.white),
+                        )
                       ],
-                    )
-                  ],
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 75,
+              ),
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GridView.builder(
+                      itemCount: input.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3),
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          onTap: () {
+                     onUserTap(index);
+                          },
+                          child: Container(
+                            height: 100,
+                            width: 100,
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.white)),
+                         
+                         child: Center(
+                           child: Text(input[index],style: TextStyle(
+                             color: Colors.white,fontSize: 30
+                           ),),
+                         ),
+                          ),
+                        );
+                      }),
                 ),
               ),
               Expanded(
-                child: GridView.builder(
-                    itemCount: 9,
-                    gridDelegate:
-                        SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        onTap: () {
-                          onUserTap(index);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey[600]),
-                          ),
-                          child: Center(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: InkWell(
+                          onTap: (){
+                            playAgain();
+                          },
+                          child: Container(
+                            height: 60,
+                            width: 300,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.green,
+                            ),
+                            child: Center(
                               child: Text(
-                         input[index],
-                            style: TextStyle(color: Colors.white, fontSize: 25),
-                          )),
+                                'Play Again',
+                                style:
+                                    TextStyle(fontSize: 25, color: Colors.white),
+                              ),
+                            ),
+                          ),
                         ),
-                      );
-                    }),
-              ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: InkWell(
+                          onTap: (){
+                            endGame();
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(20)),
+                            height: 60,
+                            width: 300,
+                            child: Center(
+                              child: Text(
+                                'End Game',
+                                style:
+                                    TextStyle(fontSize: 25, color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ))
             ],
           )),
     );
   }
-  void onUserTap(int i)
+  void onUserTap( int i)
   {
-    if(turn ==true && input[i] =='')
+    if(turn && input[i]=='')
     {
       setState(() {
-        input[i ]='X';
+        input[i] ='X';
+        turn =!turn;
+        print(input);
       });
     }
-    else if(turn ==false&& input [i]=='')
+    else if(!turn&& input[i]=='')
     {
       setState(() {
-        input[i ]='O';
+        input[i] ='O';
+        turn =!turn;
+        print(input);
       });
     }
-    turn =!turn;
     checkWinner();
     score();
-
-
+  }
+  void playAgain()
+  {
+    for(int i=0;i<9;i++)
+      {
+setState(() {
+  input[i]='';
+  print(input);
+});
+      }
+  }
+  void endGame()
+  {
+    for(int i=0;i<9;i++)
+    {
+      setState(() {
+        input[i]='';
+        print(input);
+      });
+    }
+    setState(() {
+      xScore=0;
+      oScore=0;
+    });
   }
   void checkWinner()
   {
-//Row 1st
-  if(input[0]==input[1]&&input[0]==input[2]&&input[0]!= ''  )
-  {
-    winner =input[0];
-  }
-  //Row 2nd
+    if(input[0]==input[1]&& input[0]==input[2]&&input[0]!='')
+    {
+      winner=input[0];
+    }
     else if(input[3]==input[4]&&input[3]==input[5]&&input[3]!='')
     {
-      winner =input[3];
-
+      winner=input[3];
     }
-    //Row 3rd
-  else if(input[6]==input[7]&&input[6]==input[8]&&input[8]!='')
-  {
-    winner =input[6];
-
+    else
+      {
+        print('No Winner');
+      }
   }
-  //column 1st
-  else if(input[0]==input[3]&&input[0]==input[6]&&input[0]!='')
-  {
-    winner =input[0];
-
-  }
-  else
-    {
-      print('No Winner Yet');
-    }
-  }
-  void score()
-  {
-    if(winner=='X')
+score()
+{
+  if(winner=='X')
     {
       setState(() {
         xScore++;
-        for(int i =0; i<input.length;i++)
-        {
-          input[i]='';
-        }
-      });
-      winner='';
-
-    }
-    else if(winner =='O')
-      {
-        setState(() {
-          oScore++;
-
-          for(int i =0; i<input.length;i++)
-          {
-            input[i]='';
-          }
-        });
         winner='';
-      }
-  }
+      });
+      playAgain();
+    }
+  else if(winner=='O')
+    {
+      setState(() {
+        oScore++;
+        winner='';
+      });
+      playAgain();
+    }
+}
 }
